@@ -1,7 +1,7 @@
 /** Arranque de la aplicación web estática para GitHub Pages. */
 window.UGE = window.UGE || {};
-UGE.APP_VERSION = '1.0.1';
-UGE.DATA_URL = 'data/uoc_statistics.json';
+UGE.APP_VERSION = UGE.CONFIG?.version || '1.1.0';
+UGE.DATA_URL = UGE.CONFIG?.dataUrl || 'data/uoc_statistics.json';
 
 UGE.showLoadError = (title, details=[]) => {
   const box=UGE.$('#loadscreen'); box.classList.add('error');
@@ -25,6 +25,9 @@ UGE.start = payload => {
   const store=new UGE.DataStore(payload),engine=new UGE.AnalysisEngine(),app=new UGE.AppController(store,engine);
   window.ugeApp=app; document.documentElement.dataset.theme=localStorage.ugeTheme||'light'; app.render();
   UGE.$('#loadscreen').hidden=true;
+  UGE.$('#appVersionBadge').textContent=`v${UGE.APP_VERSION}`;
+  const itineraryLink=UGE.$('#itineraryLink');
+  if(itineraryLink&&UGE.CONFIG?.links?.itinerary) itineraryLink.href=UGE.CONFIG.links.itinerary;
   UGE.$('#datasetStatus').textContent=`${store.records.length.toLocaleString('es-ES')} registros · ${payload.generated_at?.slice(0,10)||'fecha desconocida'}`;
   UGE.$('#theme').onclick=()=>{const t=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=t;localStorage.ugeTheme=t;};
   UGE.$('#period').onchange=e=>{app.period=e.target.value;app.render();app.home();}; UGE.$('#language').onchange=e=>{app.language=e.target.value;app.render();app.home();};
